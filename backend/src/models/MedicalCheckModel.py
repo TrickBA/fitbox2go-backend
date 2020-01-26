@@ -56,7 +56,7 @@ class MedicalCheckModel(db.Model):
         return MedicalCheckModel.query.get(check_id)
 
     @staticmethod
-    def get_check_by_user(user_id):
+    def get_checks_by_user(user_id):
         return MedicalCheckModel.query.filter_by(user_id=user_id).all()
 
     @staticmethod
@@ -75,6 +75,6 @@ class MedicalCheckSchema(Schema):
     user_id = fields.Int(required=True)
     body_weight_kg = fields.Float()
     ibm = fields.Float()
-    valid_until_date_time = fields.DateTime()
+    valid_until_date_time = fields.DateTime(allow_none=True)
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)

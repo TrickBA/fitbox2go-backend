@@ -1,5 +1,5 @@
 # /src/views/ExerciseTypeView.py
-from flask import request, g, Blueprint, json, Response
+from flask import request, Blueprint, json, Response
 from marshmallow import ValidationError
 
 from ..shared.Authentication import Auth
@@ -16,14 +16,13 @@ def create():
     Create ExerciseType Function
     """
     req_data = request.get_json()
-    req_data['user_id'] = g.user.get('id')
     try:
         data = exercise_type_schema.load(req_data)
     except ValidationError:
         return custom_response({'error': 'Trying to load object with invalid data'}, 400)
-    post = ExerciseTypeModel(data)
-    post.save()
-    data = exercise_type_schema.dump(post)
+    exercise_type = ExerciseTypeModel(data)
+    exercise_type.save()
+    data = exercise_type_schema.dump(exercise_type)
     return custom_response(data, 201)
 
 
@@ -32,8 +31,8 @@ def get_all():
     """
     Get All ExerciseTypes
     """
-    posts = ExerciseTypeModel.get_all_ExerciseTypes()
-    data = exercise_type_schema.dump(posts, many=True)
+    exercise_types = ExerciseTypeModel.get_all_exercise_types()
+    data = exercise_type_schema.dump(exercise_types, many=True)
     return custom_response(data, 200)
 
 
@@ -42,10 +41,10 @@ def get_one(exercise_type_id):
     """
     Get A ExerciseType
     """
-    post = ExerciseTypeModel.get_one_exercise_type(exercise_type_id)
-    if not post:
+    exercise_type = ExerciseTypeModel.get_one_exercise_type(exercise_type_id)
+    if not exercise_type:
         return custom_response({'error': 'exercise_type not found'}, 404)
-    data = exercise_type_schema.dump(post)
+    data = exercise_type_schema.dump(exercise_type)
     return custom_response(data, 200)
 
 
@@ -56,20 +55,17 @@ def update(exercise_type_id):
     Update A ExerciseType
     """
     req_data = request.get_json()
-    post = ExerciseTypeModel.get_one_exercise_type(exercise_type_id)
-    if not post:
+    exercise_type = ExerciseTypeModel.get_one_exercise_type(exercise_type_id)
+    if not exercise_type:
         return custom_response({'error': 'exercise_type not found'}, 404)
-    data = exercise_type_schema.dump(post)
-    if data.get('user_id') != g.user.get('id'):
-        return custom_response({'error': 'permission denied'}, 400)
 
     try:
         data = exercise_type_schema.load(req_data, partial=True)
     except ValidationError:
         return custom_response({'error': 'Trying to load object with invalid data'}, 400)
-    post.update(data)
+    exercise_type.update(data)
 
-    data = exercise_type_schema.dump(post)
+    data = exercise_type_schema.dump(exercise_type)
     return custom_response(data, 200)
 
 
@@ -79,14 +75,11 @@ def delete(exercise_type_id):
     """
     Delete A ExerciseType
     """
-    post = ExerciseTypeModel.get_one_ExerciseType(exercise_type_id)
-    if not post:
+    exercise_type = ExerciseTypeModel.get_one_exercise_type(exercise_type_id)
+    if not exercise_type:
         return custom_response({'error': 'exercise_type not found'}, 404)
-    data = exercise_type_schema.dump(post)
-    if data.get('user_id') != g.user.get('id'):
-        return custom_response({'error': 'permission denied'}, 400)
 
-    post.delete()
+    exercise_type.delete()
     return custom_response({'message': 'deleted'}, 204)
 
 

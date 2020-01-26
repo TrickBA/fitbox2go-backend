@@ -1,5 +1,5 @@
 # /src/views/TrainingView.py
-from flask import request, g, Blueprint, json, Response
+from flask import request, Blueprint, json, Response
 from marshmallow import ValidationError
 
 from ..shared.Authentication import Auth
@@ -16,14 +16,13 @@ def create():
     Create Training Function
     """
     req_data = request.get_json()
-    req_data['user_id'] = g.user.get('id')
     try:
         data = training_schema.load(req_data)
     except ValidationError:
         return custom_response({'error': 'Trying to load object with invalid data'}, 400)
-    post = TrainingModel(data)
-    post.save()
-    data = training_schema.dump(post)
+    training = TrainingModel(data)
+    training.save()
+    data = training_schema.dump(training)
     return custom_response(data, 201)
 
 
@@ -32,8 +31,8 @@ def get_all():
     """
     Get All Trainings
     """
-    posts = TrainingModel.get_all_Trainings()
-    data = training_schema.dump(posts, many=True)
+    trainings = TrainingModel.get_all_trainings()
+    data = training_schema.dump(trainings, many=True)
     return custom_response(data, 200)
 
 
@@ -42,10 +41,22 @@ def get_one(training_id):
     """
     Get A Training
     """
-    post = TrainingModel.get_one_training(training_id)
-    if not post:
+    training = TrainingModel.get_one_training(training_id)
+    if not training:
         return custom_response({'error': 'training not found'}, 404)
-    data = training_schema.dump(post)
+    data = training_schema.dump(training)
+    return custom_response(data, 200)
+
+
+@training_api.route('/exercise/<exercise_id>', methods=['GET'])
+def get_all_by_exercise(exercise_id):
+    """
+    Get All Trainings By Exercise
+    """
+    trainings = TrainingModel.get_trainings_by_exercise(exercise_id)
+    if not trainings:
+        return custom_response({'error': 'trainings not found'}, 404)
+    data = training_schema.dump(trainings, many=True)
     return custom_response(data, 200)
 
 
@@ -56,20 +67,17 @@ def update(training_id):
     Update A Training
     """
     req_data = request.get_json()
-    post = TrainingModel.get_one_training(training_id)
-    if not post:
+    training = TrainingModel.get_one_training(training_id)
+    if not training:
         return custom_response({'error': 'training not found'}, 404)
-    data = training_schema.dump(post)
-    if data.get('user_id') != g.user.get('id'):
-        return custom_response({'error': 'permission denied'}, 400)
 
     try:
         data = training_schema.load(req_data, partial=True)
     except ValidationError:
         return custom_response({'error': 'Trying to load object with invalid data'}, 400)
-    post.update(data)
+    training.update(data)
 
-    data = training_schema.dump(post)
+    data = training_schema.dump(training)
     return custom_response(data, 200)
 
 
@@ -79,14 +87,11 @@ def delete(training_id):
     """
     Delete A Training
     """
-    post = TrainingModel.get_one_Training(training_id)
-    if not post:
+    training = TrainingModel.get_one_training(training_id)
+    if not training:
         return custom_response({'error': 'training not found'}, 404)
-    data = training_schema.dump(post)
-    if data.get('user_id') != g.user.get('id'):
-        return custom_response({'error': 'permission denied'}, 400)
 
-    post.delete()
+    training.delete()
     return custom_response({'message': 'deleted'}, 204)
 
 

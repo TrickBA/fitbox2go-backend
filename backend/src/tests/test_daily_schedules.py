@@ -1,8 +1,6 @@
 import unittest
 import json
 
-from datetime import datetime
-
 from src.models import UserModel, UserSchema
 from ..app import create_app, db
 
@@ -36,7 +34,7 @@ class DailyScheduleTest(unittest.TestCase):
         }
         data = user_schema.load(user_data)
         user = UserModel(data)
-        self.daily_schedule = {'schedule_date': '22-01-2020'}
+        self.daily_schedule = {'user_id': user.user_id, 'schedule_date': '22-01-2020'}
 
         with self.app.app_context():
             # create all tables
@@ -64,47 +62,45 @@ class DailyScheduleTest(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
         self.assertTrue(json_data.get('error'))
 
-    def test_daily_schedule_get_me(self):
-        """ Test DailySchedules Get Me """
+    def test_daily_schedule_get_my(self):
+        """ Test DailySchedules Get My """
         res = self.client().post('/api/v1/daily_schedules/',
                                  headers={'Content-Type': 'application/json', 'api-token': self.token},
                                  data=json.dumps(self.daily_schedule))
         self.assertEqual(res.status_code, 201)
 
-        res = self.client().get('/api/v1/daily_schedules/me',
+        res = self.client().get('/api/v1/daily_schedules/my',
                                 headers={'Content-Type': 'application/json', 'api-token': self.token})
-        json_data = json.loads(res.data)
+        json_data = json.loads(res.data)[0]
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(json_data.get('schedule_date'), '22-01-2020')
-        self.assertEqual(json_data.get('user_id'), '1')
+        self.assertEqual(json_data.get('schedule_date'), '2020-01-22')
+        self.assertEqual(json_data.get('user_id'), 1)
 
-    """
-    def test_daily_schedule_update_me(self):
-        Test DailySchedules Update Me
-        daily_schedule1 = {
-            'last_name': 'new name'
-        }
-        res = self.client().post('/api/v1/daily_schedules/', headers={'Content-Type': 'application/json'},
+    def test_daily_schedule_update(self):
+        """ Test DailySchedules Update Me """
+        daily_schedule1 = {'schedule_date': '15-01-2020'}
+        res = self.client().post('/api/v1/daily_schedules/',
+                                 headers={'Content-Type': 'application/json', 'api-token': self.token},
                                  data=json.dumps(self.daily_schedule))
         self.assertEqual(res.status_code, 201)
-        api_token = json.loads(res.data).get('jwt_token')
-        res = self.client().put('/api/v1/daily_schedules/me',
-                                headers={'Content-Type': 'application/json', 'api-token': api_token},
+        schedule_id = json.loads(res.data).get('schedule_id')
+        res = self.client().put('/api/v1/daily_schedules/' + str(schedule_id),
+                                headers={'Content-Type': 'application/json', 'api-token': self.token},
                                 data=json.dumps(daily_schedule1))
         json_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(json_data.get('last_name'), 'new name')
+        self.assertEqual(json_data.get('schedule_date'), '2020-01-15')
 
     def test_delete_daily_schedule(self):
-        Test DailySchedules Delete
-        res = self.client().post('/api/v1/daily_schedules/', headers={'Content-Type': 'application/json'},
+        """ Test DailySchedules Delete """
+        res = self.client().post('/api/v1/daily_schedules/',
+                                 headers={'Content-Type': 'application/json', 'api-token': self.token},
                                  data=json.dumps(self.daily_schedule))
         self.assertEqual(res.status_code, 201)
-        api_token = json.loads(res.data).get('jwt_token')
-        res = self.client().delete('/api/v1/daily_schedules/me',
-                                   headers={'Content-Type': 'application/json', 'api-token': api_token})
+        schedule_data = json.loads(res.data)
+        res = self.client().delete('/api/v1/daily_schedules/' + str(schedule_data.get('schedule_id')),
+                                   headers={'Content-Type': 'application/json', 'api-token': self.token})
         self.assertEqual(res.status_code, 204)
-    """
 
     def tearDown(self):
         """

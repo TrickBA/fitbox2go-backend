@@ -12,7 +12,7 @@ class PatientInfoModel(db.Model):
     __tablename__ = 'patient_infos'
 
     patient_info_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), unique=True, nullable=False)
     limitations = db.Column(db.String(128), nullable=True)
     body_length_cm = db.Column(db.Float, nullable=True)
     upper_leg_length_cm = db.Column(db.Float, nullable=True)
@@ -56,6 +56,10 @@ class PatientInfoModel(db.Model):
     @staticmethod
     def get_one_patient_info(patient_info_id):
         return PatientInfoModel.query.get(patient_info_id)
+
+    @staticmethod
+    def get_user_patient_info(user_id):
+        return PatientInfoModel.query.filter_by(user_id=user_id).first()
 
     def __repr(self):
         return '<patient_info_id {}>'.format(self.patient_info_id)

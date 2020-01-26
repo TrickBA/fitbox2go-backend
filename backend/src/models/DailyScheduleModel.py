@@ -37,6 +37,9 @@ class DailyScheduleModel(db.Model):
 
     def update(self, data):
         for key, item in data.items():
+            if key == 'schedule_date':
+                self.schedule_date = datetime.datetime.strptime(item, "%d-%m-%Y")
+                continue
             setattr(self, key, item)
         self.modified_at = datetime.datetime.utcnow()
         db.session.commit()
