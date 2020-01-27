@@ -36,8 +36,8 @@ class UserModel(db.Model):
     # class constructor
     def __init__(self, data):
         """
-    Class constructor
-    """
+        Class constructor
+        """
         self.last_name = data.get('last_name')
         self.first_name = data.get('first_name')
         self.city = data.get('city')
@@ -103,7 +103,7 @@ class UserSchema(Schema):
     supervisor_id = fields.Int()
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
-    patient_info = fields.Nested(PatientInfoSchema, many=False)
-    current_fibox = fields.Nested(FitboxSchema, many=False)
+    patient_info = fields.Nested(PatientInfoSchema, many=True)
+    current_fitbox = fields.Nested(FitboxSchema, many=True)
     daily_schedules = fields.Nested(DailyScheduleSchema, many=True)
     checks = fields.Nested(MedicalCheckSchema, many=True)

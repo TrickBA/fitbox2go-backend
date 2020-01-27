@@ -31,31 +31,31 @@ def get_all():
     """
     Get All Fitboxs
     """
-    fitboxs = FitboxModel.get_all_fitboxs()
+    fitboxs = FitboxModel.get_all_fitboxes()
     data = fitbox_schema.dump(fitboxs, many=True)
     return custom_response(data, 200)
 
 
-@fitbox_api.route('/<fitbox_id>', methods=['GET'])
-def get_one(fitbox_id):
+@fitbox_api.route('/<serial_number>', methods=['GET'])
+def get_one(serial_number):
     """
     Get A Fitbox
     """
-    fitbox = FitboxModel.get_one_fitbox(fitbox_id)
+    fitbox = FitboxModel.get_one_fitbox(serial_number)
     if not fitbox:
         return custom_response({'error': 'fitbox not found'}, 404)
     data = fitbox_schema.dump(fitbox)
     return custom_response(data, 200)
 
 
-@fitbox_api.route('/<fitbox_id>', methods=['PUT'])
+@fitbox_api.route('/<serial_number>', methods=['PUT'])
 @Auth.auth_required
-def update(fitbox_id):
+def update(serial_number):
     """
     Update A Fitbox
     """
     req_data = request.get_json()
-    fitbox = FitboxModel.get_one_fitbox(fitbox_id)
+    fitbox = FitboxModel.get_one_fitbox(serial_number)
     if not fitbox:
         return custom_response({'error': 'fitbox not found'}, 404)
 
@@ -69,13 +69,13 @@ def update(fitbox_id):
     return custom_response(data, 200)
 
 
-@fitbox_api.route('/<fitbox_id>', methods=['DELETE'])
+@fitbox_api.route('/<serial_number>', methods=['DELETE'])
 @Auth.auth_required
-def delete(fitbox_id):
+def delete(serial_number):
     """
     Delete A Fitbox
     """
-    fitbox = FitboxModel.get_one_fitbox(fitbox_id)
+    fitbox = FitboxModel.get_one_fitbox(serial_number)
     if not fitbox:
         return custom_response({'error': 'fitbox not found'}, 404)
 
