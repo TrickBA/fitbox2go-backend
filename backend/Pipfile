@@ -4,6 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+ptpython = "*"
+pdbpp = "*"
 
 [packages]
 flask = "*"
@@ -21,6 +23,25 @@ pytest-cov = "*"
 python-coveralls = "*"
 gunicorn = "*"
 python-dotenv = "*"
+click = "*"
+dominate = "*"
+enum-compat = "*"
+"enum34" = "*"
+eventlet = "*"
+Flask-Bootstrap = "*"
+Flask-SocketIO = "*"
+Flask = "*"
+greenlet = "*"
+itsdangerous = "*"
+"Jinja2" = "*"
+MarkupSafe = "*"
+paho-mqtt = "*"
+python-engineio = "*"
+python-socketio = "*"
+typing = "*"
+visitor = "*"
+Werkzeug = "*"
+flask-mqtt = "*"
 
 [requires]
 python_version = "3.7"
