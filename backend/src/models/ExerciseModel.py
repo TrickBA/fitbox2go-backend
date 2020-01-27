@@ -2,7 +2,7 @@
 from marshmallow import fields, Schema
 import datetime
 from . import db
-from .ExerciseTypeModel import ExerciseTypeModel
+from .ExerciseTypeModel import ExerciseTypeModel, ExerciseTypeSchema
 from .TrainingModel import TrainingSchema
 
 
@@ -30,6 +30,7 @@ class ExerciseModel(db.Model):
     created_at = db.Column(db.DateTime)
     modified_at = db.Column(db.DateTime)
     trainings = db.relationship('TrainingModel', backref='trainings', lazy=True)
+    exercise_type = db.relationship('ExerciseTypeModel', backref='exercise_types', lazy=True)
 
     # class constructor
     def __init__(self, data, ex_type: ExerciseTypeModel):
@@ -99,3 +100,4 @@ class ExerciseSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
     trainings = fields.Nested(TrainingSchema, many=True)
+    exercise_type = fields.Nested(ExerciseTypeSchema, many=False)
